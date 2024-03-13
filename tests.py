@@ -25,16 +25,18 @@ class TestFinanceFunctions(unittest.TestCase):
         
 
     def test_balance(self):
-        
-        test_amount = 100.0
+       
+        test_amount = 100
         test_source = "Salary"
         test_date = datetime.now().date()
         test_type = "Regular"
-
-        # Извикване на функцията за добавяне на приходи
         add_income(test_amount, test_source, test_date, test_type)
-        balance()
 
+       
+        result = balance()
+
+   
+        self.assertGreaterEqual(result, 0, "Error: Balance is negative")
         
 
     # def test_visualize_income_expense(self):
