@@ -27,10 +27,7 @@ class Expense(Base):
     date = Column(DateTime, default=datetime.now)
     description = Column(String)
     type_of_expense = Column(String)
-   
-
-
-    
+     
 # Създаване на таблиците в базата данни
 Base.metadata.create_all(engine)
 
@@ -51,13 +48,13 @@ def show_expense():
                 session = Session()
                 expenses = session.query(Expense).all()
                 for expense in expenses:
-                    print(f"Expense: {expense.description}, Amount: {expense.amount}, Date: {expense.date} ,Type :{expense.type_of_expense}")
+                    print(f"ID:{expense.id} Expense: {expense.description}, Amount: {expense.amount}, Date: {expense.date} ,Type :{expense.type_of_expense}")
 def show_income():
             # Преглед на всички приходи
                 session = Session()
                 incomes = session.query(Income).all()
                 for income in incomes:
-                    print(f"Income: {income.source}, Amount: {income.amount}, Date: {income.date} , Type :{income.type_of_income}")
+                    print(f"ID:{income.id}  Income: {income.source}, Amount: {income.amount}, Date: {income.date} , Type :{income.type_of_income}")
 def balance():
             session = Session()
             total_income = session.query(func.sum(Income.amount)).scalar() or 0
@@ -95,12 +92,66 @@ def find_expense_count_daily(x):
     days_left = balance // x
     print(f"Вашия биджет {x} ще стигне за {days_left} дена")
     session.commit()
+def update_income(income_id, amount=None, source=None, date=None, type_of_income=None):
+    session = Session()
+    income = session.query(Income).filter_by(id=income_id).first()
+    if income:
+        if amount is not None:
+            income.amount = amount
+        if source:
+            income.source = source
+        if date:
+            income.date = date
+        if type_of_income:
+            income.type_of_income = type_of_income
+        session.commit()
+        print("Income updated successfully!")
+    else:
+        print("Income with the specified ID not found.")
+        return
+def update_expense(expense_id, amount=None, description=None, date=None, type_of_expense=None):
+    session = Session()
+    expense = session.query(Expense).filter_by(id=expense_id).first()
+    if expense:
+        if amount is not None:
+            expense.amount = amount
+        if description:
+            expense.description = description
+        if date:
+            expense.date = date
+        if type_of_expense:
+            expense.type_of_expense = type_of_expense
+        session.commit()
+        print("Expense updated successfully!")
+    else:
+        print("Expense with the specified ID not found.")
+        return
+def delete_income(income_id):
+    session = Session()
+    income = session.query(Income).filter_by(id=income_id).first()
+    if income:
+        session.delete(income)
+        session.commit()
+        print("Income deleted successfully!")
+    else:
+        print("Income with the specified ID not found.")
+        return
+def delete_expense(expense_id):
+    session = Session()
+    expense = session.query(Expense).filter_by(id=expense_id).first()
+    if expense:
+        session.delete(expense)
+        session.commit()
+        print("Expense deleted successfully!")
+    else:
+        print("Expense with the specified ID not found.")
+        return
 
 
 
 if __name__ == "__main__":
     while True :
-        menu_direction = input('Menu : \n 1)Check ballans \n 2)Add income \n 3)Add expense \n 4)Statistics of your wallet \n 9)Exit')
+        menu_direction = input('Menu : \n 1)Check ballans \n 2)Add income \n 3)Add expense \n 4)Statistics of your wallet \n 5)Edit or delete \n 9)Exit')
         if menu_direction == '1':
                  balance()
         elif menu_direction =='2':
@@ -147,8 +198,42 @@ if __name__ == "__main__":
                            find_expense_count_daily(daily_expence)                   
                     else:
                            break    
-       
+        elif menu_direction =='5':
+              while True :
+                    menu_direction_5 = input('1) Edit income\n 2)Edint Expense \n3)Delete income \n 4)Delete expense')
+                    if menu_direction_5 =="1":
+                          show_income()
+                          income_id = int(input("Enter the ID of the income you want to edit: "))
+                          amount = float(input("Enter the new amount: "))
+                          source = input("Enter the new source: ")
+                          date_str = input("Enter the new date (format: DD-MM-YYYY): ")
+                          date_income = datetime.strptime(date_str, '%d-%m-%Y').date()
+                          type_of_income = input("Enter the new type of income: ")
+                          update_income(income_id, amount, source, date_income, type_of_income)
 
+                    elif menu_direction_5 =='2':
+                          show_expense()                        
+                          expense_id = int(input("Enter the ID of the expense you want to edit: "))
+                          amount = float(input("Enter the new amount: "))
+                          description = input("Enter the new description: ")
+                          date_str = input("Enter the new date (format: DD-MM-YYYY): ")
+                          date_expense = datetime.strptime(date_str, '%d-%m-%Y').date()
+                          type_of_expense = input("Enter the new type of expense: ")
+                          update_expense(expense_id, amount, description, date_expense, type_of_expense)
+                    elif menu_direction_5 =='3':
+                          show_income()
+                          income_id = int(input("Enter the ID of the income you want to delete: "))
+                          delete_income(income_id)
+
+                    elif menu_direction_5=='4':
+                          show_expense()  
+                          expense_id = int(input("Enter the ID of the expense you want to delete: ")) 
+                          delete_expense(expense_id)         
+                    else:
+                          print('Error')
+                          break      
+                                
+                          
 
         elif menu_direction == '9':
                 break        
