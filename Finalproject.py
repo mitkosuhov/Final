@@ -4,6 +4,7 @@ from sqlalchemy.orm import sessionmaker
 from datetime import datetime , date
 import matplotlib.pyplot as plt
 from enum import Enum as PythonEnum
+import numpy as np
 
 # Създаване на връзка към базата данни SQLite
 engine = create_engine('sqlite:///finance.db')
@@ -37,12 +38,14 @@ def add_expense(x,y,z,q):
                 new_expense = Expense(amount=x , description=y , date=z ,type_of_expense =q)
                 session.add(new_expense)
                 session.commit()
+
 def add_income(x,y,z,q):
             # Добавяне на приход
                 session = Session()
                 new_income = Income(amount=x, source=y , date =z , type_of_income =q)
                 session.add(new_income)
                 session.commit()
+                
 def show_expense():
             # Преглед на всички разходи
                 session = Session()
@@ -62,28 +65,41 @@ def balance():
             balance = total_income - total_expense
             print(f"Balance: {balance}")
             session.commit()
+
 def visualize_income_expense():
     session = Session()
-    incomes = session.query(Income.date, func.sum(Income.amount)).group_by(Income.date).all()
-    expenses = session.query(Expense.date, func.sum(Expense.amount)).group_by(Expense.date).all()
 
-    income_dates, income_amounts = zip(*incomes)
-    expense_dates, expense_amounts = zip(*expenses)
+    # Групиране на приходите по месеци и години
+    income_data = session.query(func.strftime("%Y-%m", Income.date), func.sum(Income.amount)).group_by(func.strftime("%Y-%m", Income.date)).all()
+    income_months, income_amounts = zip(*income_data)
+
+    # Групиране на разходите по месеци и години
+    expense_data = session.query(func.strftime("%Y-%m", Expense.date), func.sum(Expense.amount)).group_by(func.strftime("%Y-%m", Expense.date)).all()
+    expense_months, expense_amounts = zip(*expense_data)
 
     plt.figure(figsize=(10, 5))
 
-    # Създаване на кръгов график за приходите
+    # Създаване на стълбова диаграма за приходите
     plt.subplot(1, 2, 1)
-    plt.pie(income_amounts, autopct='%1.1f%%', startangle=140)
-    plt.title('Приходи по дата')
+    x = np.arange(len(income_months))
+    plt.bar(x, income_amounts)
+    plt.xticks(x, income_months, rotation=45)
+    plt.xlabel('Месец и година')
+    plt.ylabel('Сума на приходите')
+    plt.title('Приходи по месеци')
 
-    # Създаване на кръгов график за разходите
+    # Създаване на стълбова диаграма за разходите
     plt.subplot(1, 2, 2)
-    plt.pie(expense_amounts,  autopct='%1.1f%%', startangle=140)
-    plt.title('Разходи по дата')
+    x = np.arange(len(expense_months))
+    plt.bar(x, expense_amounts)
+    plt.xticks(x, expense_months, rotation=45)
+    plt.xlabel('Месец и година')
+    plt.ylabel('Сума на разходите')
+    plt.title('Разходи по месеци')
 
     plt.tight_layout()
     plt.show()
+
 def find_expense_count_daily(x):
     session = Session()
     total_income = session.query(func.sum(Income.amount)).scalar() or 0
@@ -146,6 +162,30 @@ def delete_expense(expense_id):
     else:
         print("Expense with the specified ID not found.")
         return
+def visualize_income_expense1():
+    session = Session()
+    
+    # Групиране на приходите по тип
+    income_data = session.query(Income.type_of_income, func.sum(Income.amount)).group_by(Income.type_of_income).all()
+    income_types, income_amounts = zip(*income_data)
+    
+    # Групиране на разходите по тип
+    expense_data = session.query(Expense.type_of_expense, func.sum(Expense.amount)).group_by(Expense.type_of_expense).all()
+    expense_types, expense_amounts = zip(*expense_data)
+    
+    # Създаване на кръгов график за разходите
+    plt.figure(figsize=(10, 5))
+    plt.subplot(1, 2, 1)
+    plt.pie(expense_amounts, labels=expense_types, autopct='%1.1f%%', startangle=140)
+    plt.title('Разходи по тип')
+    
+    # Създаване на кръгов график за приходите
+    plt.subplot(1, 2, 2)
+    plt.pie(income_amounts, labels=income_types, autopct='%1.1f%%', startangle=140)
+    plt.title('Приходи по тип')
+
+    plt.tight_layout()
+    plt.show()
 
 
 
@@ -192,10 +232,13 @@ if __name__ == "__main__":
                     elif menu_direction_4 =='2':
                             show_expense()
                     elif menu_direction_4 == '3':        
-                        visualize_income_expense()
+                        visualize_income_expense1()
                     elif menu_direction_4 == '4':
                            daily_expence = float(input('Add daily expence'))
-                           find_expense_count_daily(daily_expence)                   
+                           find_expense_count_daily(daily_expence)    
+                    elif menu_direction_4 =='5':
+                          visualize_income_expense()
+                                                
                     else:
                            break    
         elif menu_direction =='5':
