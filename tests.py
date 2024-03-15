@@ -48,11 +48,24 @@ class TestFinanceFunctions(unittest.TestCase):
 if __name__ == '__main__':
     unittest.main()
 
+if menu_direction_5 == "1":
+    show_income()
+    income_id = int(input("Enter the ID of the income you want to edit: "))
+    # Проверка за валидност на ID на прихода
+    if not session.query(Income).filter_by(id=income_id).first():
+        print("Income with the specified ID not found.")
+    else:
+        try:
+            amount = float(input("Enter the new amount: "))
+            source = input("Enter the new source: ")
+            date_str = input("Enter the new date (format: DD-MM-YYYY): ")
+            date_income = datetime.strptime(date_str, '%d-%m-%Y').date()
+            type_of_income = input("Enter the new type of income: ")
+            # Обновяване на информацията за прихода
+            update_income(income_id, amount, source, date_income, type_of_income)
+        except ValueError:
+            print("Invalid input for amount. Please enter a valid number.")
 
-
-
-
-    
 
 
 
