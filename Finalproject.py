@@ -17,7 +17,7 @@ class Income(Base):
     id = Column(Integer, primary_key=True)
     amount = Column(Float)
     date = Column(DateTime, default=datetime.now)
-    source = Column(String)
+    description  = Column(String)
     type_of_income = Column(String)
 
 # Дефиниране на модел за разходи
@@ -42,10 +42,10 @@ def add_expense(x,y,z,q):
 def add_income(x,y,z,q):
             # Добавяне на приход
                 session = Session()
-                new_income = Income(amount=x, source=y , date =z , type_of_income =q)
+                new_income = Income(amount=x, description=y , date =z , type_of_income =q)
                 session.add(new_income)
                 session.commit()
-                
+
 def show_expense():
             # Преглед на всички разходи
                 session = Session()
@@ -57,7 +57,7 @@ def show_income():
                 session = Session()
                 incomes = session.query(Income).all()
                 for income in incomes:
-                    print(f"ID:{income.id}  Income: {income.source}, Amount: {income.amount}, Date: {income.date} , Type :{income.type_of_income}")
+                    print(f"ID:{income.id}  Income: {income.description}, Amount: {income.amount}, Date: {income.date} , Type :{income.type_of_income}")
 def balance():
             session = Session()
             total_income = session.query(func.sum(Income.amount)).scalar() or 0
@@ -108,14 +108,14 @@ def find_expense_count_daily(x):
     days_left = balance // x
     print(f"Вашия биджет {x} ще стигне за {days_left} дена")
     session.commit()
-def update_income(income_id, amount=None, source=None, date=None, type_of_income=None):
+def update_income(income_id, amount=None, description=None, date=None, type_of_income=None):
     session = Session()
     income = session.query(Income).filter_by(id=income_id).first()
     if income:
         if amount is not None:
             income.amount = amount
         if source:
-            income.source = source
+            income.description = description
         if date:
             income.date = date
         if type_of_income:
@@ -196,7 +196,7 @@ if __name__ == "__main__":
                  balance()
         elif menu_direction =='2':
                 amount_add = input('Enter amount of income:')
-                source_add = input('Enter a source of income :') 
+                source_add = input('Enter a description of the income :') 
                 date_add = input("Enter a data of income in format  'DD-MM-YYYY': ")
                 date_ = None
                 add_type_of_income = input('Enter a type of income :')
