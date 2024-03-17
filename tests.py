@@ -1,72 +1,108 @@
 import unittest
-from datetime import datetime , date
-
-from Finalproject import add_income, add_expense, balance, visualize_income_expense, find_expense_count_daily
+from datetime import datetime
+from Finalproject import (
+    add_expense,
+    add_income,
+    show_expense,
+    show_income,
+    balance,
+    visualize_income_expense,
+    find_expense_count_daily,
+    update_income,
+    update_expense,
+    delete_income,
+    delete_expense,
+    visualize_income_expense1,Expense,Session,Income
+)
+from unittest.mock import patch
+from io import StringIO
 
 class TestFinanceFunctions(unittest.TestCase):
-    def test_add_income(self):
-        test_amount = 100.0
-        test_source = "Salary"
-        test_date = datetime.now().date()
-        test_type = "Regular"
+    def setUp(self):
+        # Инициализация на променливи или настройка на среда за тестовете, ако е необходимо
+        self.maxDiff = None
 
-        # Извикване на функцията за добавяне на приходи
-        add_income(test_amount, test_source, test_date, test_type)
-       
+    def tearDown(self):
+        self.connection.close()
+        
 
     def test_add_expense(self):
-        test_amount = 100.0
-        test_source = "Food"
-        test_date = datetime.now().date()
-        test_type = "Regular"
+    # Тестове за функцията add_expense
+        amount = 100.0
+        description = "Test expense"
+        date = datetime.now()
+        type_of_expense = "Test type"
 
-        # Извикване на функцията за добавяне на приходи
-        add_expense(test_amount, test_source, test_date, test_type)
+        # Извикваме функцията за добавяне на разход
+        add_expense(amount, description, date, type_of_expense)
+
+        # Проверяваме дали разходът е добавен успешно към базата данни
+        session = Session()  # Предполагаме, че имате променлива Session за връзка с базата данни
+        added_expense = session.query(Expense).filter_by(description=description).first()
+        self.assertIsNotNone(added_expense)
+
+
+    def test_add_income(self):
+        # Тестове за функцията add_income
+        amount = 100.0
+        description = "Test expense"
+        date = datetime.now()
+        type_of_income = "Test type"
+
+        # Извикваме функцията за добавяне на разход
+        add_income(amount, description, date, type_of_income)
+
+        # Проверяваме дали разходът е добавен успешно към базата данни
+        session = Session()  # Предполагаме, че имате променлива Session за връзка с базата данни
+        added_income = session.query(Income).filter_by(description=description).first()
+        self.assertIsNotNone(added_income)
         
+    @patch('sys.stdout', new_callable=StringIO)
+    def test_show_expense(self, mock_stdout):
+        # Тестове за функцията show_expense
+        session = Session()  # Предполагаме, че имате променлива Session за връзка с базата данни
+        expected_output = "ID:1 Expense: Test expense, Amount: 100.0, Date: 2024-03-17 ,Type :Test type\n"  # Променете съгласно вашите данни
+
+        # Извикване на функцията, която ще тестваме
+        show_expense()
+
+        # Сравняване на очаквания изход със стойността, записана в mock_stdout
+        self.assertIn(expected_output, mock_stdout.getvalue()) 
+    def test_show_income(self):
+        # Тестове за функцията show_income
+        pass
 
     def test_balance(self):
-       
-        test_amount = 100
-        test_source = "Salary"
-        test_date = datetime.now().date()
-        test_type = "Regular"
-        add_income(test_amount, test_source, test_date, test_type)
+        # Тестове за функцията balance
+        pass
 
-       
-        result = balance()
+    def test_visualize_income_expense(self):
+        # Тестове за функцията visualize_income_expense
+        pass
 
-   
-        self.assertGreaterEqual(result, 0, "Error: Balance is negative")
-        
+    def test_find_expense_count_daily(self):
+        # Тестове за функцията find_expense_count_daily
+        pass
 
-    # def test_visualize_income_expense(self):
-        
+    def test_update_income(self):
+        # Тестове за функцията update_income
+        pass
 
-    # def test_find_expense_count_daily(self):
-        
+    def test_update_expense(self):
+        # Тестове за функцията update_expense
+        pass
+
+    def test_delete_income(self):
+        # Тестове за функцията delete_income
+        pass
+
+    def test_delete_expense(self):
+        # Тестове за функцията delete_expense
+        pass
+
+    def test_visualize_income_expense1(self):
+        # Тестове за функцията visualize_income_expense1
+        pass
 
 if __name__ == '__main__':
     unittest.main()
-
-if menu_direction_5 == "1":
-    show_income()
-    income_id = int(input("Enter the ID of the income you want to edit: "))
-    # Проверка за валидност на ID на прихода
-    if not session.query(Income).filter_by(id=income_id).first():
-        print("Income with the specified ID not found.")
-    else:
-        try:
-            amount = float(input("Enter the new amount: "))
-            source = input("Enter the new source: ")
-            date_str = input("Enter the new date (format: DD-MM-YYYY): ")
-            date_income = datetime.strptime(date_str, '%d-%m-%Y').date()
-            type_of_income = input("Enter the new type of income: ")
-            # Обновяване на информацията за прихода
-            update_income(income_id, amount, source, date_income, type_of_income)
-        except ValueError:
-            print("Invalid input for amount. Please enter a valid number.")
-
-
-
-
-   

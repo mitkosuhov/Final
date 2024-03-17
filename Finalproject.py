@@ -191,38 +191,46 @@ def visualize_income_expense1():
 
 if __name__ == "__main__":
     while True :
-        menu_direction = input('Menu : \n 1)Check ballans \n 2)Add income \n 3)Add expense \n 4)Statistics of your wallet \n 5)Edit or delete \n 9)Exit')
+        menu_direction = input('Menu : \n 1)Check ballans \n 2)Add transaction \n 4)Statistics of your wallet \n 5)Edit or delete \n 9)Exit')
         if menu_direction == '1':
                  balance()
         elif menu_direction =='2':
-                amount_add = input('Enter amount of income:')
-                source_add = input('Enter a description of the income :') 
-                date_add = input("Enter a data of income in format  'DD-MM-YYYY': ")
-                date_ = None
-                add_type_of_income = input('Enter a type of income :')
-                try:
-                    date_ = datetime.strptime(date_add, '%d-%m-%Y').date()
-                    amount_add = float(amount_add)
-                    
-                except ValueError:
-                        print(f'Wrong format')      
-                isinstance(amount_add, float) and isinstance(source_add, str) and isinstance(add_type_of_income, str)
-                add_income(amount_add,source_add,date_,add_type_of_income)
-                    
-        elif menu_direction =='3':
-                expense_add = input('Enter amount of expense:') 
-                source_add = input('Enter a source of expense :') 
-                date_add = input("Enter a date of expense in fomrat 'DD-MM-YYYY': ")
-                date_ = None      
-                add_type_of_expense = input('Enter a type of expense :')           
-                try:
-                    date_ = datetime.strptime(date_add, '%d-%m-%Y').date()
-                    expense_add = float(expense_add)
-                except ValueError:
-                    print('Wrong format')  
+                while True :
+                      menu_direction_2 = input('1)Add income: \n 2)Add expense: \n 3)Exit')
+                      if menu_direction_2=='1':
+                        amount_add = input('Enter amount of income:')
+                        source_add = input('Enter a description of the income :') 
+                        date_add = input("Enter a data of income in format  'DD-MM-YYYY': ")
+                        date_ = None
+                        add_type_of_income = input('Enter a type of income :')
+                        try:
+                            date_ = datetime.strptime(date_add, '%d-%m-%Y').date()
+                            amount_add = float(amount_add)
+                            
+                        except ValueError:
+                                print(f'Wrong format')      
+                        isinstance(amount_add, float) and isinstance(source_add, str) and isinstance(add_type_of_income, str)
+                        add_income(amount_add,source_add,date_,add_type_of_income)
 
-                if isinstance(expense_add, float) and isinstance(source_add, str) and isinstance(add_type_of_expense, str) :
-                    add_expense(expense_add, source_add, date_ ,add_type_of_expense)       
+                      elif menu_direction_2=='2':
+                        expense_add = input('Enter amount of expense:') 
+                        source_add = input('Enter a source of expense :') 
+                        date_add = input("Enter a date of expense in fomrat 'DD-MM-YYYY': ")
+                        date_ = None      
+                        add_type_of_expense = input('Enter a type of expense :')           
+                        try:
+                            date_ = datetime.strptime(date_add, '%d-%m-%Y').date()
+                            expense_add = float(expense_add)
+                        except ValueError:
+                            print('Wrong format')  
+
+                        if isinstance(expense_add, float) and isinstance(source_add, str) and isinstance(add_type_of_expense, str) :
+                            add_expense(expense_add, source_add, date_ ,add_type_of_expense)
+                      elif menu_direction_2=='3':
+                            break
+                      else:
+                            print('Error')
+                            continue             
                 
         elif menu_direction == '4':
                 while True :
@@ -239,8 +247,11 @@ if __name__ == "__main__":
                     elif menu_direction_4 =='5':
                           visualize_income_expense()
                                                 
-                    else:
+                    elif menu_direction_4=='6':
                            break    
+                    else:
+                          print('Error')
+                          continue
         elif menu_direction =='5':
               while True :
                     menu_direction_5 = input('1) Edit income\n 2)Edint Expense \n3)Delete income \n 4)Delete expense')
@@ -272,12 +283,15 @@ if __name__ == "__main__":
                           show_expense()  
                           expense_id = int(input("Enter the ID of the expense you want to delete: ")) 
                           delete_expense(expense_id)         
+                    elif menu_direction_5 =='5':
+                          break      
                     else:
                           print('Error')
-                          break      
+                          continue    
                                 
                           
-
         elif menu_direction == '9':
                 break        
-                
+        else:
+              print('Error')
+              continue        
