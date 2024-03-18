@@ -108,8 +108,10 @@ class TestFinanceFunctions(unittest.TestCase):
             visualize_income_expense1()
             # Проверяваме дали функцията show на pyplot е била извикана
             mock_show.assert_called_once()
+
     
         
+
 
 if __name__ == '__main__':
     unittest.main()
