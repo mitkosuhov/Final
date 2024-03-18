@@ -221,34 +221,52 @@ if __name__ == "__main__":
                 while True :
                       menu_direction_2 = input('Add transaction: \n 1)Add income: \n 2)Add expense: \n 3)Exit')
                       if menu_direction_2=='1':
-                        amount_add = input('Enter amount of income:')
-                        source_add = input('Enter a description of the income :') 
-                        date_add = input("Enter a data of income in format  'DD-MM-YYYY': ")
-                        date_ = None
-                        add_type_of_income = input('Enter a type of income :')
-                        try:
-                            date_ = datetime.strptime(date_add, '%d-%m-%Y').date()
-                            amount_add = float(amount_add)
-                            
-                        except ValueError:
-                                print(f'Wrong format')      
-                        isinstance(amount_add, float) and isinstance(source_add, str) and isinstance(add_type_of_income, str)
-                        add_income(amount_add,source_add,date_,add_type_of_income)
+                        amount_input = input("Enter the amount : ").strip()
+                        if amount_input:
+                                try:
+                                    amount = float(amount_input)
+                                except ValueError:
+                                    print("Invalid amount format. Please enter a valid number.")
+                                    continue  # Продължаваме към следващата итерация от цикъла
+                        else:
+                                amount = None
+                        source = input("Enter the source : ")
+                        date_input = input("Enter a date (format: DD-MM-YYYY): ").strip()
+                        if date_input:
+                                try:
+                                    date_income = datetime.strptime(date_input, '%d-%m-%Y').date()
+                                except ValueError:
+                                    print("Invalid date format. Please enter the date in the format: DD-MM-YYYY")
+                                    continue  # Продължаваме към следващата итерация от цикъла
+                        else:
+                                date_income = None
+                        type_of_income = input("Enter the type of income : ")
+
+                        add_income(amount, source, date_income, type_of_income)
 
                       elif menu_direction_2=='2':
-                        expense_add = input('Enter amount of expense:') 
-                        source_add = input('Enter a source of expense :') 
-                        date_add = input("Enter a date of expense in fomrat 'DD-MM-YYYY': ")
-                        date_ = None      
-                        add_type_of_expense = input('Enter a type of expense :')           
-                        try:
-                            date_ = datetime.strptime(date_add, '%d-%m-%Y').date()
-                            expense_add = float(expense_add)
-                        except ValueError:
-                            print('Wrong format')  
+                        amount_input = input("Enter the amount : ").strip()
+                        if amount_input:
+                                try:
+                                    amount = float(amount_input)
+                                except ValueError:
+                                    print("Invalid amount format. Please enter a valid number.")
+                                    continue  # Продължаваме към следващата итерация от цикъла
+                        else:
+                                amount = None
+                        source = input("Enter the source : ")
+                        date_input = input("Enter a date (format: DD-MM-YYYY): ").strip()
+                        if date_input:
+                                try:
+                                    date_expense = datetime.strptime(date_input, '%d-%m-%Y').date()
+                                except ValueError:
+                                    print("Invalid date format. Please enter the date in the format: DD-MM-YYYY")
+                                    continue  # Продължаваме към следващата итерация от цикъла
+                        else:
+                                date_expense = None
+                        type_of_expense = input("Enter the type of expense : ")
 
-                        if isinstance(expense_add, float) and isinstance(source_add, str) and isinstance(add_type_of_expense, str) :
-                            add_expense(expense_add, source_add, date_ ,add_type_of_expense)
+                        add_expense(amount, source, date_expense, type_of_expense)
                       elif menu_direction_2=='3':
                             break
                       else:
