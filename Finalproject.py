@@ -1,11 +1,10 @@
-from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime , func , Enum
+from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime , func 
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from datetime import datetime , date
+from datetime import datetime 
 import matplotlib.pyplot as plt
-from enum import Enum as PythonEnum
 import numpy as np
-
+from sqlalchemy import desc
 # Създаване на връзка към базата данни SQLite
 engine = create_engine('sqlite:///finance.db')
 Base = declarative_base()
@@ -65,6 +64,7 @@ def balance():
             balance = total_income - total_expense
             print(f"Balance: {balance}")
             session.commit()
+            return balance
 
 def visualize_income_expense():
     session = Session()
@@ -108,40 +108,42 @@ def find_expense_count_daily(x):
     days_left = balance // x
     print(f"Вашия биджет {x} ще стигне за {days_left} дена")
     session.commit()
+    return days_left
 def update_income(income_id, amount=None, description=None, date=None, type_of_income=None):
     session = Session()
     income = session.query(Income).filter_by(id=income_id).first()
     if income:
         if amount is not None:
             income.amount = amount
-        if source:
+        if description is not None:
             income.description = description
-        if date:
+        if date is not None:
             income.date = date
-        if type_of_income:
+        if type_of_income is not None:
             income.type_of_income = type_of_income
         session.commit()
         print("Income updated successfully!")
     else:
         print("Income with the specified ID not found.")
-        return
+
+
 def update_expense(expense_id, amount=None, description=None, date=None, type_of_expense=None):
     session = Session()
     expense = session.query(Expense).filter_by(id=expense_id).first()
     if expense:
         if amount is not None:
             expense.amount = amount
-        if description:
+        if description is not None:
             expense.description = description
-        if date:
+        if date is not None:
             expense.date = date
-        if type_of_expense:
+        if type_of_expense is not None:
             expense.type_of_expense = type_of_expense
         session.commit()
         print("Expense updated successfully!")
     else:
         print("Expense with the specified ID not found.")
-        return
+
 def delete_income(income_id):
     session = Session()
     income = session.query(Income).filter_by(id=income_id).first()
@@ -177,26 +179,47 @@ def visualize_income_expense1():
     plt.figure(figsize=(10, 5))
     plt.subplot(1, 2, 1)
     plt.pie(expense_amounts, labels=expense_types, autopct='%1.1f%%', startangle=140)
-    plt.title('Разходи по тип')
+    plt.title('Type of expense')
     
     # Създаване на кръгов график за приходите
     plt.subplot(1, 2, 2)
     plt.pie(income_amounts, labels=income_types, autopct='%1.1f%%', startangle=140)
-    plt.title('Приходи по тип')
-
+    plt.title('Type of income')
     plt.tight_layout()
     plt.show()
+
+def get_sorted_incomes(sort_by='date'):
+    session = Session()
+    query = session.query(Income)
+    if sort_by == 'date':
+        query = query.order_by(desc(Income.date))
+    elif sort_by == 'amount':
+        query = query.order_by(desc(Income.amount))
+    elif sort_by == 'type':
+        query = query.order_by(Income.type_of_income)
+    return query.all()
+
+def get_sorted_expenses(sort_by='date'):
+    session = Session()
+    query = session.query(Expense)
+    if sort_by == 'date':
+        query = query.order_by(desc(Expense.date))
+    elif sort_by == 'amount':
+        query = query.order_by(desc(Expense.amount))
+    elif sort_by == 'type':
+        query = query.order_by(Expense.type_of_expense)
+    return query.all()
 
 
 
 if __name__ == "__main__":
     while True :
-        menu_direction = input('Menu : \n 1)Check ballans \n 2)Add transaction \n 4)Statistics of your wallet \n 5)Edit or delete \n 9)Exit')
+        menu_direction = input('Menu : \n 1)Check ballans \n 2)Add transaction \n 3)Statistics of your wallet \n 4)Edit or delete \n 5)Sorted data \n 9)Exit')
         if menu_direction == '1':
                  balance()
         elif menu_direction =='2':
                 while True :
-                      menu_direction_2 = input('1)Add income: \n 2)Add expense: \n 3)Exit')
+                      menu_direction_2 = input('Add transaction: \n 1)Add income: \n 2)Add expense: \n 3)Exit')
                       if menu_direction_2=='1':
                         amount_add = input('Enter amount of income:')
                         source_add = input('Enter a description of the income :') 
@@ -232,9 +255,9 @@ if __name__ == "__main__":
                             print('Error')
                             continue             
                 
-        elif menu_direction == '4':
+        elif menu_direction == '3':
                 while True :
-                    menu_direction_4  = input('1)See your incoms\n 2)See your expenses\n 3)See grapic of your wallet\n 4)Calculate funchio')
+                    menu_direction_4  = input('Statistics : \n1)See your incoms\n 2)See your expenses\n 3)See grapic of your wallet\n 4)Calculate funchio\n 5)Graphic\n 6)Exit')
                     if menu_direction_4 == '1':
                         show_income()
                     elif menu_direction_4 =='2':
@@ -252,28 +275,63 @@ if __name__ == "__main__":
                     else:
                           print('Error')
                           continue
-        elif menu_direction =='5':
+        elif menu_direction =='4':
               while True :
-                    menu_direction_5 = input('1) Edit income\n 2)Edint Expense \n3)Delete income \n 4)Delete expense')
-                    if menu_direction_5 =="1":
-                          show_income()
-                          income_id = int(input("Enter the ID of the income you want to edit: "))
-                          amount = float(input("Enter the new amount: "))
-                          source = input("Enter the new source: ")
-                          date_str = input("Enter the new date (format: DD-MM-YYYY): ")
-                          date_income = datetime.strptime(date_str, '%d-%m-%Y').date()
-                          type_of_income = input("Enter the new type of income: ")
-                          update_income(income_id, amount, source, date_income, type_of_income)
+                    menu_direction_5 = input('Edit or Delete :\n 1)Edit income\n 2)Edint Expense\n 3)Delete income\n 4)Delete expense\n 5)Exit')
+                    if menu_direction_5 == "1":
+                            show_income()
+                            income_id = int(input("Enter the ID of the income you want to edit: "))
+                            amount_input = input("Enter the new amount (leave empty to keep the old value): ").strip()
+                            if amount_input:
+                                try:
+                                    amount = float(amount_input)
+                                except ValueError:
+                                    print("Invalid amount format. Please enter a valid number.")
+                                    continue  # Продължаваме към следващата итерация от цикъла
+                            else:
+                                amount = None
+                            source = input("Enter the new source (leave empty to keep the old value): ")
+                            date_input = input("Enter the new date (format: DD-MM-YYYY, leave empty to keep the old value): ").strip()
+                            if date_input:
+                                try:
+                                    date_income = datetime.strptime(date_input, '%d-%m-%Y').date()
+                                except ValueError:
+                                    print("Invalid date format. Please enter the date in the format: DD-MM-YYYY")
+                                    continue  # Продължаваме към следващата итерация от цикъла
+                            else:
+                                date_income = None
+                            type_of_income = input("Enter the new type of income (leave empty to keep the old value): ")
+
+                            update_income(income_id, amount, source, date_income, type_of_income)
+
 
                     elif menu_direction_5 =='2':
-                          show_expense()                        
-                          expense_id = int(input("Enter the ID of the expense you want to edit: "))
-                          amount = float(input("Enter the new amount: "))
-                          description = input("Enter the new description: ")
-                          date_str = input("Enter the new date (format: DD-MM-YYYY): ")
-                          date_expense = datetime.strptime(date_str, '%d-%m-%Y').date()
-                          type_of_expense = input("Enter the new type of expense: ")
-                          update_expense(expense_id, amount, description, date_expense, type_of_expense)
+                        show_expense()
+                        expense_id = int(input("Enter the ID of the expense you want to edit: "))
+                        amount_input = input("Enter the new amount (leave empty to keep the old value): ").strip()
+                        if amount_input:
+                            try:
+                                amount = float(amount_input)
+                            except ValueError:
+                                print("Invalid amount format. Please enter a valid number.")
+                                continue  # Продължаваме към следващата итерация от цикъла
+                        else:
+                            amount = None
+                        description = input("Enter the new description (leave empty to keep the old value): ")
+                        date_input = input("Enter the new date (format: DD-MM-YYYY, leave empty to keep the old value): ").strip()
+                        if date_input:
+                            try:
+                                date_expense = datetime.strptime(date_input, '%d-%m-%Y').date()
+                            except ValueError:
+                                print("Invalid date format. Please enter the date in the format: DD-MM-YYYY")
+                                continue  
+                        else:
+                            date_expense = None
+                        type_of_expense = input("Enter the new type of expense (leave empty to keep the old value): ")
+
+                        update_expense(expense_id, amount, description, date_expense, type_of_expense)
+
+
                     elif menu_direction_5 =='3':
                           show_income()
                           income_id = int(input("Enter the ID of the income you want to delete: "))
@@ -288,7 +346,34 @@ if __name__ == "__main__":
                     else:
                           print('Error')
                           continue    
-                                
+        elif menu_direction =='5':
+            while True:
+                menu_direction_6 = input('Sorted statistic:\n1) Filtered and sorted incomes\n2) Filtered and sorted expenses\n3) Exit')
+                if menu_direction_6 == '1':
+                    # Функция за филтриране и сортиране на приходите
+                    filtered_sorted_incomes = get_sorted_incomes()
+                    if filtered_sorted_incomes:
+                        print("Filtered and sorted incomes:")
+                        for income in filtered_sorted_incomes:
+                            print(f"ID: {income.id}, Income: {income.description}, Amount: {income.amount}, Date: {income.date}, Type: {income.type_of_income}")
+                    else:
+                        print("No incomes found matching the criteria.")
+                elif menu_direction_6 == '2':
+                    # Функция за филтриране и сортиране на разходите
+                    filtered_sorted_expenses = get_sorted_expenses()
+                    if filtered_sorted_expenses:
+                        print("Filtered and sorted expenses:")
+                        for expense in filtered_sorted_expenses:
+                            print(f"ID: {expense.id}, Expense: {expense.description}, Amount: {expense.amount}, Date: {expense.date}, Type: {expense.type_of_expense}")
+                    else:
+                        print("No expenses found matching the criteria.")
+                elif menu_direction_6 == '3':
+                    break
+                else:
+                    print('Error')
+                    continue
+
+                                        
                           
         elif menu_direction == '9':
                 break        
