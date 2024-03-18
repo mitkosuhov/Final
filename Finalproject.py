@@ -275,7 +275,7 @@ if __name__ == "__main__":
                 
         elif menu_direction == '3':
                 while True :
-                    menu_direction_4  = input('Statistics : \n1)See your incoms\n 2)See your expenses\n 3)See grapic of your wallet\n 4)Calculate funchio\n 5)Graphic\n 6)Exit')
+                    menu_direction_4  = input('Statistics : \n1)See your incoms\n 2)See your expenses\n 3)See grapic of your wallet\n 4)Graphycs \n 5)Calculate funchio\n 6)Exit')
                     if menu_direction_4 == '1':
                         show_income()
                     elif menu_direction_4 =='2':
@@ -283,11 +283,13 @@ if __name__ == "__main__":
                     elif menu_direction_4 == '3':        
                         visualize_income_expense1()
                     elif menu_direction_4 == '4':
+                           visualize_income_expense()
                            daily_expence = float(input('Add daily expence'))
                            find_expense_count_daily(daily_expence)    
                     elif menu_direction_4 =='5':
-                          visualize_income_expense()
-                                                
+                         daily_expence = float(input('Add daily expence'))
+                         find_expense_count_daily(daily_expence) 
+                                                      
                     elif menu_direction_4=='6':
                            break    
                     else:
