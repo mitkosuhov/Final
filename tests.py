@@ -55,8 +55,12 @@ class TestFinanceFunctions(unittest.TestCase):
         self.assertIsNotNone(added_income)
         
     def test_show_income(self):
-        # Тестове за функцията show_income
-        pass
+        with patch('sys.stdout', new=StringIO()) as fake_out:
+            show_income()
+
+    # Проверка на изхода
+        expected_output = "Expected output here"  # Предполагаме, че имате очакван изход
+        self.assertEqual(fake_out.getvalue().strip(), expected_output)
 
     def test_balance(self):
         expected_balance = 10  # или някаква друга положителна стойност
@@ -91,15 +95,21 @@ class TestFinanceFunctions(unittest.TestCase):
         
     def test_delete_income(self):
         
-        pass
+        income_id_to_delete = 1  
+        delete_income(income_id_to_delete)
 
     def test_delete_expense(self):
         
-        pass
+        expense_id_to_delete = 1  
+        delete_expense(expense_id_to_delete)
 
     def test_visualize_income_expense1(self):
+        with patch('matplotlib.pyplot.show') as mock_show:
+            visualize_income_expense1()
+            # Проверяваме дали функцията show на pyplot е била извикана
+            mock_show.assert_called_once()
     
-        pass
+        
 
 if __name__ == '__main__':
     unittest.main()
