@@ -84,18 +84,18 @@ def visualize_income_expense():
     x = np.arange(len(income_months))
     plt.bar(x, income_amounts)
     plt.xticks(x, income_months, rotation=45)
-    plt.xlabel('Месец и година')
-    plt.ylabel('Сума на приходите')
-    plt.title('Приходи по месеци')
+    plt.xlabel('Month and year')
+    plt.ylabel('Sum of incomes')
+    plt.title('Incomes by month')
 
     # Създаване на стълбова диаграма за разходите
     plt.subplot(1, 2, 2)
     x = np.arange(len(expense_months))
     plt.bar(x, expense_amounts)
     plt.xticks(x, expense_months, rotation=45)
-    plt.xlabel('Месец и година')
-    plt.ylabel('Сума на разходите')
-    plt.title('Разходи по месеци')
+    plt.xlabel('Month and year')
+    plt.ylabel('Sum of expense')
+    plt.title('Expenses by month')
 
     plt.tight_layout()
     plt.show()
@@ -106,7 +106,7 @@ def find_expense_count_daily(x):
     total_expense = session.query(func.sum(Expense.amount)).scalar() or 0
     balance = total_income - total_expense
     days_left = balance // x
-    print(f"Вашия биджет {x} ще стигне за {days_left} дена")
+    print(f"Your budget {x} will be enough for {days_left} days")
     session.commit()
     return days_left
 def update_income(income_id, amount=None, description=None, date=None, type_of_income=None):
@@ -164,7 +164,7 @@ def delete_expense(expense_id):
     else:
         print("Expense with the specified ID not found.")
         return
-def visualize_income_expense1():
+def visualize_income_expense_2():
     session = Session()
     
     # Групиране на приходите по тип
@@ -275,19 +275,19 @@ if __name__ == "__main__":
                 
         elif menu_direction == '3':
                 while True :
-                    menu_direction_4  = input('Statistics : \n1)See your incoms\n 2)See your expenses\n 3)See grapic of your wallet\n 4)Graphycs \n 5)Calculate funchio\n 6)Exit')
+                    menu_direction_4  = input('Statistics : \n1)See your incoms\n 2)See your expenses\n 3)Grapic by types\n 4)Graphyc by date \n 5)Calculate funchio\n 6)Exit')
                     if menu_direction_4 == '1':
                         show_income()
                     elif menu_direction_4 =='2':
                             show_expense()
                     elif menu_direction_4 == '3':        
-                        visualize_income_expense1()
+                        visualize_income_expense_2()
                     elif menu_direction_4 == '4':
                            visualize_income_expense()
                            daily_expence = float(input('Add daily expence'))
                            find_expense_count_daily(daily_expence)    
                     elif menu_direction_4 =='5':
-                         daily_expence = float(input('Add daily expence'))
+                         daily_expence = float(input('Add your daily expense :'))
                          find_expense_count_daily(daily_expence) 
                                                       
                     elif menu_direction_4=='6':
