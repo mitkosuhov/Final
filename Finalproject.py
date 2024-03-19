@@ -10,7 +10,7 @@ engine = create_engine('sqlite:///finance.db')
 Base = declarative_base()
 Session = sessionmaker(bind=engine)
 
-# Дефиниране на модел за приходи
+# Създаване на модел за приходи
 class Income(Base):
     __tablename__ = 'incomes'
     id = Column(Integer, primary_key=True)
@@ -19,7 +19,7 @@ class Income(Base):
     description  = Column(String)
     type_of_income = Column(String)
 
-# Дефиниране на модел за разходи
+# Създаване на модел за разходи
 class Expense(Base):
     __tablename__ = 'expenses'
     id = Column(Integer, primary_key=True)
@@ -51,12 +51,14 @@ def show_expense():
                 expenses = session.query(Expense).all()
                 for expense in expenses:
                     print(f"ID:{expense.id} Expense: {expense.description}, Amount: {expense.amount}, Date: {expense.date} ,Type :{expense.type_of_expense}")
+
 def show_income():
             # Преглед на всички приходи
                 session = Session()
                 incomes = session.query(Income).all()
                 for income in incomes:
                     print(f"ID:{income.id}  Income: {income.description}, Amount: {income.amount}, Date: {income.date} , Type :{income.type_of_income}")
+
 def balance():
             session = Session()
             total_income = session.query(func.sum(Income.amount)).scalar() or 0
@@ -109,6 +111,7 @@ def find_expense_count_daily(x):
     print(f"Your budget {x} will be enough for {days_left} days")
     session.commit()
     return days_left
+
 def update_income(income_id, amount=None, description=None, date=None, type_of_income=None):
     session = Session()
     income = session.query(Income).filter_by(id=income_id).first()
@@ -125,7 +128,6 @@ def update_income(income_id, amount=None, description=None, date=None, type_of_i
         print("Income updated successfully!")
     else:
         print("Income with the specified ID not found.")
-
 
 def update_expense(expense_id, amount=None, description=None, date=None, type_of_expense=None):
     session = Session()
@@ -154,6 +156,7 @@ def delete_income(income_id):
     else:
         print("Income with the specified ID not found.")
         return
+    
 def delete_expense(expense_id):
     session = Session()
     expense = session.query(Expense).filter_by(id=expense_id).first()
@@ -164,6 +167,7 @@ def delete_expense(expense_id):
     else:
         print("Expense with the specified ID not found.")
         return
+    
 def visualize_income_expense_2():
     session = Session()
     
@@ -210,6 +214,12 @@ def get_sorted_expenses(sort_by='date'):
         query = query.order_by(Expense.type_of_expense)
     return query.all()
 
+def calculate_percentage_of_income():
+    session = Session()
+    total_income = session.query(func.sum(Income.amount)).scalar() or 0
+    thirty_percent_of_income = 0.3 * total_income
+    session.commit()
+    print(f"30% of total income is: {thirty_percent_of_income}")
 
 
 if __name__ == "__main__":
@@ -275,7 +285,7 @@ if __name__ == "__main__":
                 
         elif menu_direction == '3':
                 while True :
-                    menu_direction_4  = input('Statistics : \n1)See your incoms\n 2)See your expenses\n 3)Grapic by types\n 4)Graphyc by date \n 5)Calculate funchio\n 6)Exit')
+                    menu_direction_4  = input('Statistics : \n1)See your incoms\n 2)See your expenses\n 3)Grapic by types\n 4)Graphyc by date \n 5)Calculate funchio\n 6)30 procent of your income \n 7)Exit')
                     if menu_direction_4 == '1':
                         show_income()
                     elif menu_direction_4 =='2':
@@ -284,14 +294,17 @@ if __name__ == "__main__":
                         visualize_income_expense_2()
                     elif menu_direction_4 == '4':
                            visualize_income_expense()
-                           daily_expence = float(input('Add daily expence'))
-                           find_expense_count_daily(daily_expence)    
+                               
                     elif menu_direction_4 =='5':
                          daily_expence = float(input('Add your daily expense :'))
                          find_expense_count_daily(daily_expence) 
                                                       
                     elif menu_direction_4=='6':
-                           break    
+                           calculate_percentage_of_income()
+
+                    elif menu_direction_4 =='7':
+                         break       
+                              
                     else:
                           print('Error')
                           continue
